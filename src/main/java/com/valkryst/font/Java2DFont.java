@@ -3,7 +3,6 @@ package com.valkryst.font;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.sun.javafx.iio.ImageStorage;
 import com.valkryst.tile.Tile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,19 +12,14 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class Java2DFont extends Font {
     private static final Logger LOG=LogManager.getLogger(Java2DFont.class);
 
     private Image fontTexture;
 
-    private Map<Character, Rectangle> fontMap;
+
 
     Cache<Integer, Image> tintCache;
 
@@ -51,53 +45,8 @@ public class Java2DFont extends Font {
         tintCache = Caffeine.newBuilder().maximumSize(500).expireAfterAccess(1, TimeUnit.MINUTES).build();
     }
 
-    private void loadFontFile(File file) throws IOException {
-        if (!file.exists()){
-            LOG.error("Attempted to load a font that does not exist: {}.",file);
-            System.exit(-1);
-        }
-
-        List<String> lines = Files.lines(file.toPath()).filter(line->line.startsWith("char ")).collect(Collectors.toList());
-        fontMap = new HashMap<>();
-        for (String line : lines) {
-            String token[] = line.split("\\s+");
-            int id = Integer.parseInt(token[1].replaceAll(".*=",""));
-            if (id > 100000){
-                continue;
-            }
-            Character ch = (char)id;
-            int x =Integer.parseInt(token[2].replaceAll(".*=",""));
-            int y =Integer.parseInt(token[3].replaceAll(".*=",""));
-            int width = Integer.parseInt(token[4].replaceAll(".*=",""));
-            int height = Integer.parseInt(token[5].replaceAll(".*=",""));
-
-            //Yeah yeah, i'm gonna do this a bunch of unnecessary times.  I don't care.
-            charWidth=width;
-            charHeight=height;
-
-            if (fontMap.containsKey(ch))
-                LOG.info("Duplicate character detected in font {}, character is {}", file,ch);
-            fontMap.put(ch,new Rectangle(x,y,width,height));
-        }
-    }
-
-    public void draw(char ch, int x, int y, Color foreground, Color background, Graphics2D g){
-        Rectangle rect = fontMap.get(ch);
 
 
-        g.setColor(Color.white);
-        g.drawImage(fontTexture,x,y,rect.width+x,rect.height+y,rect.x,rect.y,rect.x+rect.width,rect.y+rect.height,null);
-
-        g.setColor(foreground);
-
-        //g.setXORMode(new Color(foreground.getRed(),foreground.getGreen(),foreground.getBlue(),0));
-        g.setComposite(AlphaComposite.DstOver);
-        g.drawImage(fontTexture,x,y,rect.width+x,rect.height+y, rect.x, rect.y,rect.x+rect.width,rect.y+rect.height,null);
-
-
-        g.setColor(background);
-        g.fillRect(x,y,rect.width,rect.height);
-    }
     public void draw(Tile tile, int x, int y, Graphics g){
         if (tile.getCharacter()== 0)
                 return;
