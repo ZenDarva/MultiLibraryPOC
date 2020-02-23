@@ -54,7 +54,6 @@ public class Java2DFont extends Font {
         Rectangle rect = fontMap.get(tile.getCharacter());
 
         g.setColor(tile.getBackground());
-        //g.fillRect(x,y,rect.width,rect.height);
         g.drawImage(glyph,x,y,null);
     }
 

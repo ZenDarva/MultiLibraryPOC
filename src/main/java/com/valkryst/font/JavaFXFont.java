@@ -2,7 +2,6 @@ package com.valkryst.font;
 
 import com.valkryst.tile.Tile;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.Blend;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -14,7 +13,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Map;
 
 public class JavaFXFont extends Font {
     private static final Logger LOG = LogManager.getLogger(JavaFXFont.class);
